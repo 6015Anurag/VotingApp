@@ -2,6 +2,7 @@
 import React from "react";
 
 const Connected = (props) => {
+    console.log(props)
     return (
         <div className="connected-container">
             <h1 className="connected-header">You are Connected to Metamask</h1>
@@ -23,7 +24,7 @@ const Connected = (props) => {
                 <tr>
                     <th>Index</th>
                     <th>Candidate name</th>
-                     { <th>Candidate votes</th> }
+                    {props.isAdmin && <th>Candidate votes</th>} 
                 </tr>
                 </thead>
                 <tbody>
@@ -31,7 +32,7 @@ const Connected = (props) => {
                     <tr key={index}>
                     <td>{candidate.index}</td>
                     <td>{candidate.name}</td>
-                     <td>{candidate.voteCount}</td>
+                    {props.isAdmin && <td>{candidate.voteCount}</td>}
                     </tr>
                 ))}
                 </tbody>
