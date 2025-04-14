@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
-import Connected from './Connected';
+import SuccessPopup from "./SuccessPopup";
+import './SuccessPopup.css';
 
 function Popup(props) {
-  console.log("Props from popup: ",props);
-  // 🔹 Handle file selection and validation
+  console.log("Props from popup: ", props);
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [valid,setValid] = useState(false)
+  const [valid, setValid] = useState(false);
   const [link, setLink] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   useEffect(() => {
-    const getImage = async ()=>{
+    const getImage = async () => {
       try {
         const response = await fetch(`https://dvapp-backend-rrb4.onrender.com/api/getimage/${props.account}`, {
           method: "GET",
         });
         const data = await response.json();
-        setLink(data.imageUrl)
+        setLink(data.imageUrl);
         
         if (response.ok) {
           console.log("File get:", data);
@@ -27,8 +30,7 @@ function Popup(props) {
       }
     }
     getImage();
-  }, [])
-  
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -44,11 +46,9 @@ function Popup(props) {
     }
   };
 
-  // 🔹 Handle file upload (connect to blockchain later)
-  const handleSubmitVerification = async(isAdmin, isValid) => {
+  const handleSubmitVerification = async (isAdmin, isValid) => {
     if (!isAdmin) {
-      console.log("Submit: ",isAdmin, isValid)
-      // User side: Validate and submit file
+      console.log("Submit: ", isAdmin, isValid);
       if (!selectedFile) {
         setError("Please upload an image first!");
         return;
@@ -56,8 +56,8 @@ function Popup(props) {
       
       const formData = new FormData();
       formData.append("photo", selectedFile);
-      formData.append("id", props.account); // Include user ID
-  
+      formData.append("id", props.account);
+
       try {
         const response = await fetch("https://dvapp-backend-rrb4.onrender.com/api/post", {
           method: "POST",
@@ -67,6 +67,8 @@ function Popup(props) {
         const data = await response.json();
         if (response.ok) {
           console.log("File uploaded successfully:", data);
+          setSuccessMessage("Photo has been uploaded successfully!");
+          setShowSuccess(true);
         } else {
           setError(data.message || "File upload failed");
         }
@@ -74,11 +76,9 @@ function Popup(props) {
         setError("An error occurred while uploading the file");
       }
     } else {
-      // Admin side: Approve the submission
-      setValid(isValid); // ⭐ This is what you wanted!
-      console.log("Submit: ",isAdmin, isValid)
-      // User side: Validate and submit file
-  
+      setValid(isValid);
+      console.log("Submit: ", isAdmin, isValid);
+
       try {
         const response = await fetch(`https://dvapp-backend-rrb4.onrender.com/api/approval/${props.account}`, {
           method: "POST"
@@ -87,26 +87,31 @@ function Popup(props) {
         const data = await response.json();
         if (response.ok) {
           console.log("Account verified:", data);
+          setSuccessMessage("User verification approved successfully!");
+          setShowSuccess(true);
         } else {
-          setError(data.message || "File upload failed");
+          setError(data.message || "Approval failed");
         }
       } catch (error) {
-        setError("An error occurred while uploading the file");
+        setError("An error occurred while approving the file");
       }
-      // (Optional: Notify backend of approval)
     }
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+    props.closePopup(false, selectedFile);
   };
 
   return (
     <div className="popup-overlay">
-      <div className="popup-content" >
+      <div className="popup-content">
         {props.isAdmin ? (
           <>
             <h2>Verify</h2>
             <p className="connected-account">Metamask Account: {props.account}</p>
-            {/* <img src=""></img> */}
             <div className="id-card-frame">
-            <img src={link}></img>
+              <img src={link} alt="User verification"></img>
             </div>
           </>
         ) : (
@@ -124,8 +129,7 @@ function Popup(props) {
         <div className="popup-buttons">
           <button
             onClick={() => {
-              handleSubmitVerification(props.isAdmin,valid);
-              props.closePopup(false, selectedFile);
+              handleSubmitVerification(props.isAdmin, valid);
             }}
             style={{ backgroundColor: "#28a745", color: "white" }}
           >
@@ -141,6 +145,13 @@ function Popup(props) {
           </button>
         </div>
       </div>
+
+      {showSuccess && (
+        <SuccessPopup 
+          message={successMessage}
+          onClose={handleCloseSuccess}
+        />
+      )}
     </div>
   );
 }
