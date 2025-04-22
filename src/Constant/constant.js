@@ -1,5 +1,6 @@
-const contractAddress = "0xC2586d1852995fbB0c6FbCe24E6bc046BfA430f4";
+const contractAddress = "0xbe4FD7F96fae70E054BcA8579F3ACe5989838670";
 // 0x5e4290Dce5f6aDa222b27C185B567DA8981aA3b6
+const MODEL_URL = 'https://dvapp-backend-rrb4.onrender.com/models';
 const contractAbi = [
     {
       "inputs": [
@@ -165,4 +166,4 @@ const contractAbi = [
     }
   ];
 
-export {contractAbi, contractAddress};
+export {contractAbi, contractAddress, MODEL_URL};

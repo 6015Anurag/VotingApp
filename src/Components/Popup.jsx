@@ -48,7 +48,6 @@ function Popup(props) {
 
   const handleSubmitVerification = async (isAdmin, isValid) => {
     if (!isAdmin) {
-      console.log("Submit: ", isAdmin, isValid);
       if (!selectedFile) {
         setError("Please upload an image first!");
         return;
