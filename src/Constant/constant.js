@@ -1,4 +1,4 @@
-const contractAddress = "0xbe4FD7F96fae70E054BcA8579F3ACe5989838670";
+const contractAddress = "0x81daee32e24Df30b7254377EC61B75F8735C0361";
 // 0x5e4290Dce5f6aDa222b27C185B567DA8981aA3b6
 const MODEL_URL = 'https://dvapp-backend-rrb4.onrender.com/models';
 const contractAbi = [
